@@ -7,8 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ViewController.h"
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+#import "XMPP.h"
+@interface AppDelegate : UIResponder <UIApplicationDelegate, XMPPRosterDelegate>
+{
+  
+}
 
 @property (strong, nonatomic) UIWindow *window;
 

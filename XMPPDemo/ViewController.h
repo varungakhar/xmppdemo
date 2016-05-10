@@ -7,9 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "XMPP.h"
+#import "SignUpViewController.h"
+#import "FriendsViewController.h"
 @interface ViewController : UIViewController
-
+{
+    IBOutlet UITextField *usertextfield;
+    IBOutlet UITextField *passwordtext;
+}
 
 @end
 
