@@ -13,8 +13,8 @@
 #import <CoreData/CoreData.h>
 #import "DDLog.h"
 
-typedef void(^response)(NSString *result,NSDictionary  *error);
-typedef void(^sendresponse)(NSString *result,NSDictionary *error);
+typedef void(^response)(NSString *result,NSDictionary  *error,id data);
+typedef void(^sendresponse)(NSString *result,NSDictionary *error,id data);
 @interface XMPP : NSObject<XMPPRosterDelegate>
 {
     NSString *password;
@@ -30,13 +30,16 @@ typedef void(^sendresponse)(NSString *result,NSDictionary *error);
     XMPPCapabilitiesCoreDataStorage *xmppCapabilitiesStorage;
     
     sendresponse send;
+    NSDictionary *savedict;
     
     
 }
 +(XMPP*)sharedxmpp;
 - (void)setupStream;
--(void)login:(NSString *)username password:(NSString*)userpassword result:(response)result;
+-(void)adduser;
+-(void)login:(NSDictionary *)userdetails result:(response)result;
 -(void)registeruser:(NSDictionary *)dict result:(response)result;
+-(void)getalluser:(NSDictionary*)dict result:(response)result;
 @property (nonatomic, strong, readonly) XMPPStream *xmppStream;
 @property (nonatomic, strong, readonly) XMPPReconnect *xmppReconnect;
 @property (nonatomic, strong, readonly) XMPPRoster *xmppRoster;

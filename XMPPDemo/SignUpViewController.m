@@ -21,9 +21,9 @@
 }
 -(IBAction)signup:(id)sender
 {
-    NSDictionary *dict=@{@"username":usertextfield.text,@"password":passwordtext.text,@"email":emailtext.text,@"phone":phonetext.text};
+    NSDictionary *dict=@{@"username":usertextfield.text,@"password":passwordtext.text,@"email":emailtext.text,@"phone":phonetext.text,@"action":@"signup"};
     
-    [[XMPP sharedxmpp]registeruser:dict result:^(NSString *result, NSDictionary *error)
+    [[XMPP sharedxmpp]registeruser:dict result:^(NSString *result, NSDictionary *error, id data)
     {
         if ([result isEqualToString:@"yes"])
         {

@@ -14,12 +14,34 @@
 
 @implementation FriendsViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
-}
+    
 
-- (void)didReceiveMemoryWarning {
+    
+    
+    
+    
+// Do any additional setup after loading the view from its nib.
+}
+-(IBAction)adduser:(id)sender
+{
+    
+    [[XMPP sharedxmpp]adduser];
+    
+    
+}
+-(IBAction)registeruser:(id)sender
+{
+        NSDictionary *dict=@{@"action":@"fetchuser"};
+        [[XMPP sharedxmpp]getalluser:dict result:^(NSString *result, NSDictionary *error, id data)
+         {
+    
+        }];
+}
+- (void)didReceiveMemoryWarning
+{
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }

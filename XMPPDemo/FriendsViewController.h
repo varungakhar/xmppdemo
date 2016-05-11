@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "XMPP.h"
 @interface FriendsViewController : UIViewController
 
 @end
