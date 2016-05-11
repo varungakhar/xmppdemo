@@ -22,7 +22,14 @@
 }
 -(IBAction)login:(id)sender
 {
-    [[XMPP sharedxmpp]login:usertextfield.text password:passwordtext.text result:^(NSString *result ,NSDictionary *dict )
+    
+    NSDictionary *dict=@{
+                         @"username":usertextfield.text,@"password":passwordtext.text,@"action":@"login"
+                         
+                         };
+    
+    
+    [[XMPP sharedxmpp]login:dict result:^(NSString *result ,NSDictionary *dict , id data)
     {
         if ([result isEqualToString:@"yes"])
         {
