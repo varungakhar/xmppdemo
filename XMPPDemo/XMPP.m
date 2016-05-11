@@ -24,7 +24,6 @@ static XMPP *sharedxmpp=nil;
 
 +(XMPP*)sharedxmpp
 {
-    
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^
     {
