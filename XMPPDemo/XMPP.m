@@ -100,10 +100,10 @@ static XMPP *sharedxmpp=nil;
     
     
     
-    NSString *JID=[NSString stringWithFormat:@"%@@varun.local",@"annoymous"];
+    NSString *JID=[NSString stringWithFormat:@"%@@varun.local",@"admin"];
     
     
-    password=@"";
+    password=@"admin";
     savedict =@{@"action":@""};
     
     [xmppStream setMyJID:[XMPPJID jidWithString:JID]];
@@ -122,80 +122,86 @@ static XMPP *sharedxmpp=nil;
     customCertEvaluation = YES;
 }
 
+#pragma mark CreateRoom
 
+-(void)createroom
+{
+    
+XMPPRoomMemoryStorage *roomStorage = [[XMPPRoomMemoryStorage alloc] init];
+    
+    XMPPJID *roomJID = [XMPPJID jidWithString:@"register@conference.varun.local"];
+    XMPPRoom *xmppRoom = [[XMPPRoom alloc] initWithRoomStorage:roomStorage
+                                                           jid:roomJID
+                                                 dispatchQueue:dispatch_get_main_queue()];
+    
+    [xmppRoom activate:xmppStream];
+    [xmppRoom addDelegate:self
+            delegateQueue:dispatch_get_main_queue()];
+    
+    [xmppRoom joinRoomUsingNickname:@"admin"
+                            history:nil
+                           password:nil];
+}
+- (void)xmppRoomDidCreate:(XMPPRoom *)sender
+{
+    
+}
 
-
-
+- (void)xmppRoomDidJoin:(XMPPRoom *)sender
+{
+    [sender fetchConfigurationForm];
+}
+- (void)xmppRoom:(XMPPRoom *)sender didFetchConfigurationForm:(NSXMLElement *)configForm
+{
+    NSXMLElement *newConfig = [configForm copy];
+    NSArray *fields = [newConfig elementsForName:@"field"];
+    
+    for (NSXMLElement *field in fields)
+    {
+        NSString *var = [field attributeStringValueForName:@"var"];
+        // Make Room Persistent
+        if ([var isEqualToString:@"muc#roomconfig_persistentroom"]) {
+            [field removeChildAtIndex:0];
+            [field addChild:[NSXMLElement elementWithName:@"value" stringValue:@"1"]];
+        }
+    }
+    
+    [sender configureRoomUsingOptions:newConfig];
+}
 #pragma mark GetAllRegisteredUser
 
 -(void)getalluser:(NSDictionary*)dict result:(response)result
 {
     
-    NSError *error ;
-    NSXMLElement *query = [[NSXMLElement alloc] initWithXMLString:@"<query xmlns='http://jabber.org/protocol/disco#items' node='all users'/>"
-                                                            error:&error];
-    XMPPIQ *iq = [XMPPIQ iqWithType:@"get"
-                                 to:[XMPPJID jidWithString:@"localhost"]
-                          elementID:[xmppStream generateUUID] child:query];
-    [xmppStream sendElement:iq];
-    
 //    NSError *error ;
-//    NSXMLElement *queryElement = [NSXMLElement elementWithName: @"query" xmlns: @"jabber:iq:roster"];
-//    
-//    NSXMLElement *iqStanza = [NSXMLElement elementWithName: @"iq"];
-//    [iqStanza addAttributeWithName: @"type" stringValue: @"get"];
-//    [iqStanza addChild: queryElement];
-//    
-//    [xmppStream sendElement: iqStanza];
+//    NSXMLElement *query = [[NSXMLElement alloc] initWithXMLString:@"<query xmlns='http://jabber.org/protocol/disco#items'/>"
+//                                                            error:&error];
+//    XMPPIQ *iq = [XMPPIQ iqWithType:@"get"
+//                                 to:[XMPPJID jidWithString:@"varun.local"]
+//                          elementID:[xmppStream generateUUID] child:query];
+//    [xmppStream sendElement:iq];
     
     
-//    NSString *userBare1  = [[xmppStream myJID] bare];
+    
+//    XMPPJID *servrJID = [XMPPJID jidWithString:@"register@conference.varun.local"];
+//    XMPPIQ *iq = [XMPPIQ iqWithType:@"get" to:servrJID];
+//    [iq addAttributeWithName:@"from" stringValue:[[self xmppStream] myJID].full];
 //    NSXMLElement *query = [NSXMLElement elementWithName:@"query"];
-//    [query addAttributeWithName:@"xmlns" stringValue:@"jabber:iq:search"];
-//    
-//    NSXMLElement *x = [NSXMLElement elementWithName:@"x" xmlns:@"jabber:x:data"];
-//    [x addAttributeWithName:@"type" stringValue:@"submit"];
-//    
-//    NSXMLElement *formType = [NSXMLElement elementWithName:@"field"];
-//    [formType addAttributeWithName:@"type" stringValue:@"hidden"];
-//    [formType addAttributeWithName:@"var" stringValue:@"FORM_TYPE"];
-//    [formType addChild:[NSXMLElement elementWithName:@"value" stringValue:@"jabber:iq:search" ]];
-//    
-//    NSXMLElement *userName = [NSXMLElement elementWithName:@"field"];
-//    [userName addAttributeWithName:@"var" stringValue:@"Username"];
-//    [userName addChild:[NSXMLElement elementWithName:@"value" stringValue:@"1" ]];
-//    
-//    NSXMLElement *name = [NSXMLElement elementWithName:@"field"];
-//    [name addAttributeWithName:@"var" stringValue:@"Name"];
-//    [name addChild:[NSXMLElement elementWithName:@"value" stringValue:@"1"]];
-//    
-//    NSXMLElement *email = [NSXMLElement elementWithName:@"field"];
-//    [email addAttributeWithName:@"var" stringValue:@"Email"];
-//    [email addChild:[NSXMLElement elementWithName:@"value" stringValue:@"1"]];
-//    
-//    //Here in the place of SearchString we have to provide registered user name or emailid or username(if it matches in Server it provide registered user details otherwise Server provides response as empty)
-//    NSXMLElement *search = [NSXMLElement elementWithName:@"field"];
-//    [search addAttributeWithName:@"var" stringValue:@"search"];
-//    [search addChild:[NSXMLElement elementWithName:@"value" stringValue:[NSString stringWithFormat:@"%@", @"varun.local"]]];
-//    
-//    [x addChild:formType];
-//    [x addChild:userName];
-//    [x addChild:name];
-//    [x addChild:email];
-//    [x addChild:search];
-//    [query addChild:x];
-//    
-//    NSXMLElement *iq = [NSXMLElement elementWithName:@"iq"];
-//    [iq addAttributeWithName:@"type" stringValue:@"set"];
-//    [iq addAttributeWithName:@"id" stringValue:@"searchByUserName"];
-//    [iq addAttributeWithName:@"to" stringValue:[NSString stringWithFormat:@"search.%@",@"varun.local"]];
-//    [iq addAttributeWithName:@"from" stringValue:userBare1];
+//    [query addAttributeWithName:@"xmlns" stringValue:@"http://jabber.org/protocol/disco#items"];
 //    [iq addChild:query];
-//    [ xmppStream sendElement:iq];
-//
+//    [[self xmppStream] sendElement:iq];
     
     
+    NSError *error ;
+    NSXMLElement *queryElement = [NSXMLElement elementWithName: @"query" xmlns: @"jabber:iq:roster"];
     
+    NSXMLElement *iqStanza = [NSXMLElement elementWithName: @"iq"];
+    [iqStanza addAttributeWithName: @"type" stringValue: @"get"];
+    [iqStanza addChild: queryElement];
+    
+    [xmppStream sendElement: iqStanza];
+    
+
     savedict =dict;
     send=result;
     
@@ -219,9 +225,7 @@ static XMPP *sharedxmpp=nil;
     
     [xmppStream setMyJID:[XMPPJID jidWithString:myJID]];
     
-    
     NSError *error = nil;
-    
     
     [xmppStream disconnect];
     
@@ -281,7 +285,6 @@ static XMPP *sharedxmpp=nil;
     [elements addObject:[NSXMLElement elementWithName:@"password" stringValue:[dict valueForKey:@"password"]]];
     [elements addObject:[NSXMLElement elementWithName:@"email" stringValue:[dict valueForKey:@"email"]]];
     [elements addObject:[NSXMLElement elementWithName:@"phone" stringValue:[dict valueForKey:@"phone"]]];
-    
     [xmppStream registerWithElements:elements error:nil];
     savedict=dict;
     send=result;
@@ -291,9 +294,11 @@ static XMPP *sharedxmpp=nil;
 {
     if ([[savedict objectForKey:@"action"]isEqualToString:@"signup"])
     {
-        send(@"yes",@{},nil);
+    NSString *userJID=[NSString stringWithFormat:@"%@@varun.local",[savedict objectForKey:@"username"]];
+    XMPPJID *newBuddy = [XMPPJID jidWithString:userJID];
+    [xmppRoster addUser:newBuddy withNickname:nil];
+    send(@"yes",@{},nil);
     }
-    
     
 }
 - (void)xmppStream:(XMPPStream *)sender didNotRegister:(NSXMLElement *)error
@@ -406,6 +411,10 @@ static XMPP *sharedxmpp=nil;
 
 }
 
+
+
+
+
 #pragma mark Receive IQ
 
 - (BOOL)xmppStream:(XMPPStream *)sender didReceiveIQ:(XMPPIQ *)iq
@@ -413,7 +422,7 @@ static XMPP *sharedxmpp=nil;
     
     if ([[savedict objectForKey:@"action"]isEqualToString:@"fetchuser"])
     {
-NSXMLElement *queryElement = [iq elementForName: @"query" xmlns: @"http://jabber.org/protocol/disco#items"];
+NSXMLElement *queryElement = [iq elementForName: @"query" xmlns: @"jabber:iq:roster"];
         
         if (queryElement)
         {
@@ -425,7 +434,7 @@ NSXMLElement *queryElement = [iq elementForName: @"query" xmlns: @"http://jabber
                 [mArray addObject:jid];
             }
             
-            
+
             if (mArray.count<=0)
             {
             send(@"no",@{@"errorcode":@"5551",@"error":@"Not Found"},nil);

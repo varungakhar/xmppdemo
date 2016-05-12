@@ -12,7 +12,7 @@
 #import "XMPPFramework.h"
 #import <CoreData/CoreData.h>
 #import "DDLog.h"
-
+#import "XMPPRoomMemoryStorage.h"
 typedef void(^response)(NSString *result,NSDictionary  *error,id data);
 typedef void(^sendresponse)(NSString *result,NSDictionary *error,id data);
 @interface XMPP : NSObject<XMPPRosterDelegate>
