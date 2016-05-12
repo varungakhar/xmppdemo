@@ -18,6 +18,11 @@
 {
     [super viewDidLoad];
     
+    //    NSDictionary *dict=@{@"action":@"fetchuser"};
+    //    [[XMPP sharedxmpp]getalluser:dict result:^(NSString *result, NSDictionary *error, id data)
+    //     {
+    //
+    //     }];
 
     
     
@@ -38,7 +43,7 @@
         [[XMPP sharedxmpp]getalluser:dict result:^(NSString *result, NSDictionary *error, id data)
          {
     
-        }];
+         }];
 }
 - (void)didReceiveMemoryWarning
 {

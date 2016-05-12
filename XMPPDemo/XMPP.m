@@ -130,22 +130,26 @@ static XMPP *sharedxmpp=nil;
 -(void)getalluser:(NSDictionary*)dict result:(response)result
 {
     
-    NSError *error ;
-    NSXMLElement *query = [[NSXMLElement alloc] initWithXMLString:@"<query xmlns='http://jabber.org/protocol/disco#items' node='all users'/>"
-                                                            error:&error];
-    XMPPIQ *iq = [XMPPIQ iqWithType:@"get"
-                                 to:[XMPPJID jidWithString:@"localhost"]
-                          elementID:[xmppStream generateUUID] child:query];
-    [xmppStream sendElement:iq];
-    
 //    NSError *error ;
-//    NSXMLElement *queryElement = [NSXMLElement elementWithName: @"query" xmlns: @"jabber:iq:roster"];
-//    
-//    NSXMLElement *iqStanza = [NSXMLElement elementWithName: @"iq"];
-//    [iqStanza addAttributeWithName: @"type" stringValue: @"get"];
-//    [iqStanza addChild: queryElement];
-//    
-//    [xmppStream sendElement: iqStanza];
+//    NSXMLElement *query = [[NSXMLElement alloc] initWithXMLString:@"<query xmlns='http://jabber.org/protocol/disco#items'/>"
+//                                                            error:&error];
+//    XMPPIQ *iq = [XMPPIQ iqWithType:@"get"
+//                                 to:[XMPPJID jidWithString:@"varun.local"]
+//                          elementID:[xmppStream generateUUID] child:query];
+//    [xmppStream sendElement:iq];
+    
+    NSError *error ;
+    NSXMLElement *queryElement = [NSXMLElement elementWithName: @"query" xmlns: @"http://jabber.org/protocol/disco#items"];
+    
+    NSXMLElement *iqStanza = [NSXMLElement elementWithName: @"iq"];
+    [iqStanza addAttributeWithName: @"type" stringValue: @"get"];
+  //  [iqStanza addAttributeWithName:@"from" stringValue:@"localhost"];
+    //[iqStanza addAttributeWithName:@"both" stringValue:@"ANY_ID_NAME"];
+    
+//      [iqStanza addAttributeWithName: @"node" stringValue: @"all user"];
+    [iqStanza addChild: queryElement];
+    
+    [xmppStream sendElement: iqStanza];
     
     
 //    NSString *userBare1  = [[xmppStream myJID] bare];
@@ -280,8 +284,10 @@ static XMPP *sharedxmpp=nil;
     [elements addObject:[NSXMLElement elementWithName:@"password" stringValue:[dict valueForKey:@"password"]]];
     [elements addObject:[NSXMLElement elementWithName:@"email" stringValue:[dict valueForKey:@"email"]]];
     [elements addObject:[NSXMLElement elementWithName:@"phone" stringValue:[dict valueForKey:@"phone"]]];
+    NSError *error;
     
-    [xmppStream registerWithElements:elements error:nil];
+    
+    [xmppStream registerWithElements:elements error:&error];
     savedict=dict;
     send=result;
 }
@@ -409,10 +415,9 @@ static XMPP *sharedxmpp=nil;
 
 - (BOOL)xmppStream:(XMPPStream *)sender didReceiveIQ:(XMPPIQ *)iq
 {
-    
     if ([[savedict objectForKey:@"action"]isEqualToString:@"fetchuser"])
     {
-NSXMLElement *queryElement = [iq elementForName: @"query" xmlns: @"http://jabber.org/protocol/disco#items"];
+NSXMLElement *queryElement = [iq elementForName: @"query" xmlns: @"jabber:iq:roster"];
         
         if (queryElement)
         {
