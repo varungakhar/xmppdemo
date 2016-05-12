@@ -8,6 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import "XMPP.h"
-@interface FriendsViewController : UIViewController
-
+@interface FriendsViewController : UIViewController<UITableViewDataSource,UITableViewDelegate>
+{
+    IBOutlet UINavigationBar *navbar;
+    NSMutableArray *array;
+    IBOutlet UITableView *table;
+    
+}
 @end

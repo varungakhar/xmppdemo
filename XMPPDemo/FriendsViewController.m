@@ -25,17 +25,8 @@
     //     }];
 
     
-    
-    
-    
-// Do any additional setup after loading the view from its nib.
-}
--(IBAction)adduser:(id)sender
-{
-    
-    [[XMPP sharedxmpp]adduser];
-    
-    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"FetchUser" style:UIBarButtonItemStyleDone target:self action:@selector(registeruser:)];
+    array=[[NSMutableArray alloc]init];
 }
 -(IBAction)registeruser:(id)sender
 {
@@ -45,11 +36,36 @@
     
          }];
 }
+
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return array.count;
+}
+-(UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+   static NSString *string=@"Cell";
+    UITableViewCell *cell=[tableView dequeueReusableCellWithIdentifier:string];
+    if (!cell)
+    {
+        cell=[[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:string];
+    }
+    cell.textLabel.text=[array objectAtIndex:indexPath.row];
+    return cell;
+}
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+}
+
+
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+
 
 /*
 #pragma mark - Navigation
