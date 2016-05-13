@@ -180,31 +180,10 @@ XMPPRoomMemoryStorage *roomStorage = [[XMPPRoomMemoryStorage alloc] init];
 //                          elementID:[xmppStream generateUUID] child:query];
 //    [xmppStream sendElement:iq];
     
-    NSError *error ;
-    NSXMLElement *queryElement = [NSXMLElement elementWithName: @"query" xmlns: @"http://jabber.org/protocol/disco#items"];
-    
-    NSXMLElement *iqStanza = [NSXMLElement elementWithName: @"iq"];
-    [iqStanza addAttributeWithName: @"type" stringValue: @"get"];
-  //  [iqStanza addAttributeWithName:@"from" stringValue:@"localhost"];
-    //[iqStanza addAttributeWithName:@"both" stringValue:@"ANY_ID_NAME"];
-    
-//      [iqStanza addAttributeWithName: @"node" stringValue: @"all user"];
-    [iqStanza addChild: queryElement];
-    
-    [xmppStream sendElement: iqStanza];
-    
-    
-//    XMPPJID *servrJID = [XMPPJID jidWithString:@"register@conference.varun.local"];
-//    XMPPIQ *iq = [XMPPIQ iqWithType:@"get" to:servrJID];
-//    [iq addAttributeWithName:@"from" stringValue:[[self xmppStream] myJID].full];
-//    NSXMLElement *query = [NSXMLElement elementWithName:@"query"];
-//    [query addAttributeWithName:@"xmlns" stringValue:@"http://jabber.org/protocol/disco#items"];
-//    [iq addChild:query];
-//    [[self xmppStream] sendElement:iq];
     
     
     NSError *error ;
-    NSXMLElement *queryElement = [NSXMLElement elementWithName: @"query" xmlns: @"jabber:iq:roster"];
+    NSXMLElement *queryElement = [NSXMLElement elementWithName: @"query" xmlns:@"jabber:iq:roster"];
     
     NSXMLElement *iqStanza = [NSXMLElement elementWithName: @"iq"];
     [iqStanza addAttributeWithName: @"type" stringValue: @"get"];
