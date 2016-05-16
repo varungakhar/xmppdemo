@@ -13,6 +13,8 @@
 #import <CoreData/CoreData.h>
 #import "DDLog.h"
 #import "XMPPRoomMemoryStorage.h"
+#import "XMPPOutgoingFileTransfer.h"
+#import "XMPPIncomingFileTransfer.h"
 typedef void(^response)(NSString *result,NSDictionary  *error,id data);
 typedef void(^sendresponse)(NSString *result,NSDictionary *error,id data);
 @interface XMPP : NSObject<XMPPRosterDelegate>
@@ -28,15 +30,21 @@ typedef void(^sendresponse)(NSString *result,NSDictionary *error,id data);
     XMPPvCardAvatarModule *xmppvCardAvatarModule;
     XMPPCapabilities *xmppCapabilities;
     XMPPCapabilitiesCoreDataStorage *xmppCapabilitiesStorage;
+    XMPPIncomingFileTransfer *_xmppIncomingFileTransfer;
     
     sendresponse send;
     NSDictionary *savedict;
+    XMPPOutgoingFileTransfer *_fileTransfer;
+    NSMutableArray *turnSockets;
     
+    NSString *resource;
     
 }
 +(XMPP*)sharedxmpp;
 - (void)setupStream;
 -(void)adduser;
+-(void)sendphoto:(NSDictionary *)userdict result:(response)result;
+-(void)sendmessage:(NSDictionary *)userdict result:(response)result;
 -(void)login:(NSDictionary *)userdetails result:(response)result;
 -(void)registeruser:(NSDictionary *)dict result:(response)result;
 -(void)getalluser:(NSDictionary*)dict result:(response)result;

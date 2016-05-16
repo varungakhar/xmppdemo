@@ -28,6 +28,7 @@
 		15D1F49D1CC1117500785F67 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15D1F49C1CC1117500785F67 /* CoreGraphics.framework */; };
 		15D1F49F1CC1117C00785F67 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15D1F49E1CC1117C00785F67 /* Foundation.framework */; };
 		15D1F4A11CC1118300785F67 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15D1F4A01CC1118300785F67 /* UIKit.framework */; };
+		8BA35F731CE649F700D272BC /* front.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 8BA35F721CE649F700D272BC /* front.jpg */; };
 		8BBCDEEE1CE25E9C009B5622 /* XMPPAnonymousAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BBCDD851CE25E9C009B5622 /* XMPPAnonymousAuthentication.m */; };
 		8BBCDEEF1CE25E9C009B5622 /* XMPPDeprecatedDigestAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BBCDD881CE25E9C009B5622 /* XMPPDeprecatedDigestAuthentication.m */; };
 		8BBCDEF01CE25E9C009B5622 /* XMPPDeprecatedPlainAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BBCDD8B1CE25E9C009B5622 /* XMPPDeprecatedPlainAuthentication.m */; };
@@ -202,6 +203,7 @@
 		15D1F49E1CC1117C00785F67 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		15D1F4A01CC1118300785F67 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		15D1F4A21CC1121C00785F67 /* XMPPFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMPPFramework.h; sourceTree = "<group>"; };
+		8BA35F721CE649F700D272BC /* front.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = front.jpg; sourceTree = "<group>"; };
 		8BBCDD841CE25E9C009B5622 /* XMPPAnonymousAuthentication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMPPAnonymousAuthentication.h; sourceTree = "<group>"; };
 		8BBCDD851CE25E9C009B5622 /* XMPPAnonymousAuthentication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMPPAnonymousAuthentication.m; sourceTree = "<group>"; };
 		8BBCDD871CE25E9C009B5622 /* XMPPDeprecatedDigestAuthentication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMPPDeprecatedDigestAuthentication.h; sourceTree = "<group>"; };
@@ -526,6 +528,7 @@
 		15D1F2761CC10F0100785F67 = {
 			isa = PBXGroup;
 			children = (
+				8BA35F721CE649F700D272BC /* front.jpg */,
 				8BBCDD811CE25E9C009B5622 /* JabberFramework */,
 				15D1F4A01CC1118300785F67 /* UIKit.framework */,
 				15D1F49E1CC1117C00785F67 /* Foundation.framework */,
@@ -1453,6 +1456,7 @@
 				154870EB1CE1A876001CCE31 /* ViewController.xib in Resources */,
 				154870F01CE1B06B001CCE31 /* SignUpViewController.xib in Resources */,
 				15D1F28F1CC10F0100785F67 /* Assets.xcassets in Resources */,
+				8BA35F731CE649F700D272BC /* front.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

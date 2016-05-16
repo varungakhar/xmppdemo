@@ -38,6 +38,7 @@ static XMPP *sharedxmpp=nil;
 - (void)setupStream
 {
     
+    turnSockets=[[NSMutableArray alloc]init];
     
     xmppStream = [[XMPPStream alloc] init];
     
@@ -78,7 +79,18 @@ static XMPP *sharedxmpp=nil;
     xmppCapabilities.autoFetchHashedCapabilities = YES;
     xmppCapabilities.autoFetchNonHashedCapabilities = NO;
     
+    _fileTransfer = [[XMPPOutgoingFileTransfer alloc] initWithDispatchQueue:dispatch_get_main_queue()];
+    [_fileTransfer activate:xmppStream];
+//    _fileTransfer.disableIBB = NO;
+//    _fileTransfer.disableSOCKS5 = NO;
+    [_fileTransfer addDelegate:self delegateQueue:dispatch_get_main_queue()];
     
+    
+    _xmppIncomingFileTransfer = [XMPPIncomingFileTransfer new];
+    [_xmppIncomingFileTransfer activate:xmppStream];
+//    _xmppIncomingFileTransfer.disableIBB = NO;
+//    _xmppIncomingFileTransfer.disableSOCKS5 = NO;
+    [_xmppIncomingFileTransfer addDelegate:self delegateQueue:dispatch_get_main_queue()];
     
     [xmppReconnect         activate:xmppStream];
     [xmppRoster            activate:xmppStream];
@@ -180,9 +192,7 @@ XMPPRoomMemoryStorage *roomStorage = [[XMPPRoomMemoryStorage alloc] init];
 //                          elementID:[xmppStream generateUUID] child:query];
 //    [xmppStream sendElement:iq];
     
-    
-    
-    NSError *error ;
+
     NSXMLElement *queryElement = [NSXMLElement elementWithName: @"query" xmlns:@"jabber:iq:roster"];
     
     NSXMLElement *iqStanza = [NSXMLElement elementWithName: @"iq"];
@@ -196,6 +206,181 @@ XMPPRoomMemoryStorage *roomStorage = [[XMPPRoomMemoryStorage alloc] init];
     send=result;
     
 }
+
+
+- (void)turnSocket:(TURNSocket *)sender didSucceed:(GCDAsyncSocket *)socket
+{
+    
+    NSLog(@"TURN Connection succeeded!");
+    NSLog(@"You now have a socket that you can use to send/receive data to/from the other person.");
+    
+    UIImage *image= [UIImage imageNamed:@"front.jpg"];
+    
+    
+    NSData *dataF = UIImagePNGRepresentation(image);
+    
+    [socket writeData:dataF withTimeout:200 tag:2];
+    
+    
+    [turnSockets removeObject:sender];
+}
+
+- (void)turnSocketDidFail:(TURNSocket *)sender
+{
+    
+    NSLog(@"TURN Connection failed!");
+    [turnSockets removeObject:sender];
+    
+}
+
+- (void)readRecievedData:(NSData*)data withTurnSocket:(TURNSocket *)receiver
+{
+    
+    NSLog(@"%@",data);
+    
+//    [fileTransferData appendData:data];
+//    float progress = (float)[fileTransferData length] / (float)[data length];
+//    
+//    NSLog(@"Progresaa value is: %f",progress);
+}
+
+#pragma mark SendMessage
+
+-(void)sendmessage:(NSDictionary *)userdict result:(response)result
+{
+    
+    NSLog(@"Message sending fron Gmail");
+    NSXMLElement *body = [NSXMLElement elementWithName:@"body"];
+    [body setStringValue:[userdict objectForKey:@"message"]];
+    NSXMLElement *message = [NSXMLElement elementWithName:@"message"];
+    [message addAttributeWithName:@"type" stringValue:@"chat"];
+    [message addAttributeWithName:@"to" stringValue:[userdict objectForKey:@"user"]];
+    [message addChild:body];
+    NSLog(@"message1%@",message);
+    
+    [xmppStream sendElement:message];
+    
+    
+    
+    
+    savedict=userdict;
+    send=result;
+}
+
+-(void)sendphoto:(NSDictionary *)userdict result:(response)result
+{
+    UIImage *image= [UIImage imageNamed:@"front.jpg"];
+    
+    
+    NSData *dataF = UIImagePNGRepresentation(image);
+//    NSString *imgStr=[dataF base64EncodedStringWithOptions:kNilOptions];
+//    
+//    NSXMLElement *body = [NSXMLElement elementWithName:@"body"];
+//    [body setStringValue:[userdict objectForKey:@"message"]];
+//    
+//    NSXMLElement *imgAttachement = [NSXMLElement elementWithName:@"attachment"];
+//    [imgAttachement setStringValue:imgStr];
+//    
+//    NSXMLElement *message = [NSXMLElement elementWithName:@"message"];
+//    [message addAttributeWithName:@"type" stringValue:@"chat"];
+//    [message addAttributeWithName:@"to" stringValue:[userdict objectForKey:@"user"]];
+//    [message addChild:body];
+//    [message addChild:imgAttachement];
+//    
+//    [self.xmppStream sendElement:message];
+    
+    
+    NSError *err;
+    
+    NSString *res=[XMPPJID jidWithString:[userdict valueForKey:@"user"]];
+    
+    NSString *string=resource;
+    
+
+//    if (![_fileTransfer sendData:dataF
+//                           named:@"ff"
+//                     toRecipient:[XMPPJID jidWithString:string]
+//          
+//                     description:@"Baal's Soulstone, obviously."
+//                           error:&err])
+//    
+//    {
+//    
+//        
+//        NSLog(@"fcd");
+//        
+//        
+//    }
+    
+    XMPPJID *JID = [XMPPJID jidWithString:string];
+    NSLog(@"%@",[JID full]);
+    NSLog(@"Attempting TURN connection to %@", JID);
+    [TURNSocket setProxyCandidates:[NSArray arrayWithObjects:JID.domain, nil]];
+    TURNSocket *turnSocket = [[TURNSocket alloc] initWithStream:[self xmppStream] toJID:JID];
+    [turnSockets addObject:turnSocket];
+    [turnSocket startWithDelegate:self delegateQueue:dispatch_get_main_queue()];
+    
+    savedict=userdict;
+    send=result;
+    
+    
+    
+}
+
+- (void)xmppOutgoingFileTransfer:(XMPPOutgoingFileTransfer *)sender
+                didFailWithError:(NSError *)error
+{
+    
+    
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
+                                                    message:@"There was an error sending your file. See the logs."
+                                                   delegate:nil
+                                          cancelButtonTitle:@"OK"
+                                          otherButtonTitles:nil];
+    [alert show];
+}
+
+- (void)xmppOutgoingFileTransferDidSucceed:(XMPPOutgoingFileTransfer *)sender
+{
+ 
+    
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Success!"
+                                                    message:@"Your file was sent successfully."
+                                                   delegate:nil
+                                          cancelButtonTitle:@"OK"
+                                          otherButtonTitles:nil];
+    [alert show];
+}
+
+
+- (void)xmppIncomingFileTransfer:(XMPPIncomingFileTransfer *)sender
+                didFailWithError:(NSError *)error
+{
+    
+}
+
+- (void)xmppIncomingFileTransfer:(XMPPIncomingFileTransfer *)sender
+               didReceiveSIOffer:(XMPPIQ *)offer
+{
+    [sender acceptSIOffer:offer];
+}
+
+- (void)xmppIncomingFileTransfer:(XMPPIncomingFileTransfer *)sender
+              didSucceedWithData:(NSData *)data
+                           named:(NSString *)name
+{
+   
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+                                                         NSUserDomainMask,
+                                                         YES);
+    NSString *fullPath = [[paths lastObject] stringByAppendingPathComponent:name];
+    [data writeToFile:fullPath options:0 error:nil];
+    
+   
+}
+
+
 #pragma mark Login
 
 -(void)login:(NSDictionary *)userdetails result:(response)result
@@ -404,10 +589,6 @@ XMPPRoomMemoryStorage *roomStorage = [[XMPPRoomMemoryStorage alloc] init];
 
 }
 
-
-
-
-
 #pragma mark Receive IQ
 
 - (BOOL)xmppStream:(XMPPStream *)sender didReceiveIQ:(XMPPIQ *)iq
@@ -423,6 +604,11 @@ NSXMLElement *queryElement = [iq elementForName: @"query" xmlns: @"jabber:iq:ros
             for (int i=0; i<[itemElements count]; i++)
             {
                 NSString *jid=[[[itemElements objectAtIndex:i] attributeForName:@"jid"] stringValue];
+                
+                
+               XMPPJID *user= [XMPPJID jidWithString:jid];
+                
+                
                 [mArray addObject:jid];
             }
             
@@ -440,9 +626,23 @@ NSXMLElement *queryElement = [iq elementForName: @"query" xmlns: @"jabber:iq:ros
             
     }
     
-    
-  
     }
+    else if ([[savedict objectForKey:@"action"]isEqualToString:@"sendmessage"])
+    {
+       
+        if ([TURNSocket isNewStartTURNRequest:iq])
+        {
+            NSLog(@"TURN Connectio started:: to establish:: incoming file transfer request..");
+            TURNSocket *turnSocket = [[TURNSocket alloc]initWithStream:sender incomingTURNRequest:iq];
+            [turnSocket startWithDelegate:self delegateQueue:dispatch_get_main_queue()];
+            [turnSockets addObject:turnSocket];
+        }
+        
+        
+    }
+    
+    
+    
     
       return NO;
 }
@@ -501,6 +701,10 @@ NSXMLElement *queryElement = [iq elementForName: @"query" xmlns: @"jabber:iq:ros
             NSLog(@"av..%@",presenceFromUser);
             NSLog(@"av..%@",presenceType);
             NSLog(@"av..%@",myUsername);
+            
+            resource=[presence fromStr];
+            
+            
         }
         else if ([presenceType isEqualToString:@"unavailable"])
         {

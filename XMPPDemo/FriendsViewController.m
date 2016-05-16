@@ -34,6 +34,18 @@
         [[XMPP sharedxmpp]getalluser:dict result:^(NSString *result, NSDictionary *error, id data)
          {
     
+             if ([result isEqualToString:@"yes"])
+             {
+                 for (NSString *string in data)
+                 {
+                     [array addObject:string];
+                 }
+                 
+                 [table reloadData];
+                 
+             }
+             
+             
          }];
 }
 
@@ -54,6 +66,23 @@
 }
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    
+    NSDictionary *dict=@{@"action":@"sendmessage",@"message":@"bvbdfjbfjdbfjbdfjbsjfbdjsfbk",@"user":[array objectAtIndex:indexPath.row]};
+    
+    
+//    [[XMPP sharedxmpp]sendmessage:dict result:^(NSString *result, NSDictionary *error, id data) {
+//    
+//        
+//        
+//    }];
+    
+    
+    [[XMPP sharedxmpp]sendphoto:dict result:^(NSString *result, NSDictionary *error, id data) {
+        
+        
+        
+    }];
+    
     
 }
 
